@@ -18,10 +18,10 @@ class TokenizerTest extends SpecificationWithJUnit {
       output must not(throwA[Exception])
       output.length mustEqual expected.size
 
+      // Check that the tokens returned equal the expected.
       val topics = output.map {
-        case((period, topic), one) =>
+        case(period, topic) =>
           period mustEqual 1
-          one mustEqual 1
           topic
       }.toList
       topics mustEqual expected

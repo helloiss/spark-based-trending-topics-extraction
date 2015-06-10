@@ -4,9 +4,9 @@ import org.apache.spark.rdd.RDD
 
 /**
  * Tokenizes tweets sorted by period into individual containing topics per period.
- * filtering the non-alphabetic characters.
+ * filtering the non-alphabetic characters, URLs, and short words.
  */
-object Tokenizer extends PipelineComponent[(Long, String), ((Long,String), Int)] {
+object Tokenizer extends PipelineComponent[(Long, String), (Long,String)] {
 
   val MatchURL = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
   val MatchShortWords = "\\b\\w{1,2}\\b"
@@ -14,22 +14,24 @@ object Tokenizer extends PipelineComponent[(Long, String), ((Long,String), Int)]
 
   /**
    * Processes the following input to the following output.
-   * (period : Long, tweet: String) => ((period: Long, topic: String), 1)
+   * (period : Long, tweet: String) => (period: Long, topic: String)
    * @param input The RDD to process.
    * @return A transformation of the input.
    */
-  override def process(input: RDD[(Long, String)]): RDD[((Long,String), Int)] = {
+  override def process(input: RDD[(Long, String)]): RDD[(Long,String)] = {
     input.flatMap {
       case (period, tweet) =>
-        val tokens = tokenize(tweet)
-        val seq = for (token <- tokens) yield {
-          Some(((period, token), 1))
-        }
-        val r = seq.flatten
-        r
+        for (token <- tokenize(tweet)) yield {
+        (period, token)
+      }
     }
   }
 
+  /**
+   * Clean the string and split into tokens.
+   * @param rawString The raw input.
+   * @return A list of tokens.
+   */
   private def tokenize(rawString: String): Array[String]  = {
     rawString
       .toLowerCase // Convert all topics to lower case.

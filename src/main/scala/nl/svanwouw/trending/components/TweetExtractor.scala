@@ -33,6 +33,7 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
       Some((Math.ceil(status.getCreatedAt.getTime/periodSize).toLong, status.getText))
     } catch {
       case e : TwitterException =>
+        // TODO: Add support for other input file format.
         None
     }
 
