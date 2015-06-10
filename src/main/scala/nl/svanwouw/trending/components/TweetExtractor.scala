@@ -1,7 +1,5 @@
 package nl.svanwouw.trending.components
 
-import java.util.Date
-
 import org.apache.spark.rdd.RDD
 import twitter4j.TwitterException
 import twitter4j.json.DataObjectFactory
@@ -30,6 +28,7 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
    * @return The tweet contents.
    */
   def extractTweet(rawJson: String, periodSize: Int) : Option[(Long, String)] = {
+
     try {
       val status = DataObjectFactory.createStatus(rawJson)
       Some((Math.ceil(status.getCreatedAt.getTime/periodSize).toLong, status.getText))
@@ -37,5 +36,6 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
       case e : TwitterException =>
         None
     }
+
   }
 }
