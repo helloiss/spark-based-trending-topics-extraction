@@ -27,8 +27,7 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
    * @param rawJson The raw json to parse.
    * @return The tweet contents.
    */
-  def extractTweet(rawJson: String, periodSize: Int) : Option[(Long, String)] = {
-
+  private def extractTweet(rawJson: String, periodSize: Int) : Option[(Long, String)] = {
     try {
       val status = DataObjectFactory.createStatus(rawJson)
       Some((Math.ceil(status.getCreatedAt.getTime/periodSize).toLong, status.getText))
