@@ -1,12 +1,12 @@
 package nl.svanwouw.trending
 
-import nl.svanwouw.trending.components.{FrequencyCounter, Tokenizer, TweetExtractor}
+import nl.svanwouw.trending.components.{SlopeCalculator, FrequencyCounter, Tokenizer, TweetExtractor}
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * A pipeline that can be executed through the commandline or re-used in another module.
  */
-object TrendPipeline {
+object TrendingTopicPipeline {
 
   val AppName = "SparkBasedTrending"
 
@@ -33,7 +33,8 @@ object TrendPipeline {
     val output = input |>
       new TweetExtractor(periodSize).process |>
       Tokenizer.process |>
-      FrequencyCounter.process
+      FrequencyCounter.process |>
+      SlopeCalculator.process
     output.saveAsTextFile(outputDir)
   }
 

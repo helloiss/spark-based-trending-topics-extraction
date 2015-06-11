@@ -1,5 +1,6 @@
 package nl.svanwouw.trending.components
 
+import nl.svanwouw.trending.types.{Tweet, Period}
 import org.apache.spark.rdd.RDD
 import twitter4j.TwitterException
 import twitter4j.json.DataObjectFactory
@@ -7,18 +8,18 @@ import twitter4j.json.DataObjectFactory
 /**
  * Extracts tweets text (topics) from Twitter Status objects that are provided in JSON.
  */
-class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,String)] {
+class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Period,Tweet)] {
 
   var _periodSize: Int = periodSize
 
 
 
   /**
-   * (rawJson: String) => (period : Long, tweet: String)
+   * Processes the input RDD of raw json / faulty strings.
    * @param input The RDD to process.
    * @return A transformation of the input.
    */
-  override def process(input: RDD[String]): RDD[(Long,String)] = {
+  override def process(input: RDD[String]): RDD[(Period,Tweet)] = {
     input.flatMap(line => extractTweet(line, _periodSize))
   }
 
@@ -27,10 +28,10 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
    * @param rawJson The raw json to parse.
    * @return The tweet contents.
    */
-  private def extractTweet(rawJson: String, periodSize: Int) : Option[(Long, String)] = {
+  private def extractTweet(rawJson: String, periodSize: Int) : Option[(Period, Tweet)] = {
     try {
       val status = DataObjectFactory.createStatus(rawJson)
-      Some((Math.ceil(status.getCreatedAt.getTime/periodSize).toLong, status.getText))
+      Some((new Period(Math.ceil(status.getCreatedAt.getTime/periodSize).toLong), new Tweet(status.getText)))
     } catch {
       case e : TwitterException =>
         // TODO: Add support for other input file format.
@@ -38,4 +39,10 @@ class TweetExtractor(periodSize: Int) extends PipelineComponent[String, (Long,St
     }
 
   }
+}
+
+/**
+ * Helper for extracting per day.
+ */
+object TweetExtractor extends TweetExtractor(periodSize = 86400) {
 }

@@ -13,7 +13,7 @@ class TweetExtractorTest extends SpecificationWithJUnit {
       val file = classLoader.getResource("test-tweets.json")
       val input = SparkTestContext.sc.textFile(file.getPath)
       lazy val output = {
-        TweetExtractorDays.process(input).collect()
+        TweetExtractor.process(input).collect()
       }
       output must not(throwA[Exception])
       output.length mustEqual 10
@@ -22,7 +22,7 @@ class TweetExtractorTest extends SpecificationWithJUnit {
     "handle lines not containing a tweet gracefully" in {
       val input = SparkTestContext.sc.parallelize(List("this is not a valid status", "this neither"))
       lazy val output = {
-        TweetExtractorDays.process(input).collect()
+        TweetExtractor.process(input).collect()
       }
       output must not(throwA[Exception])
       output.length mustEqual 0
