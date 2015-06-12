@@ -45,24 +45,27 @@ object SlopeCalculator extends PipelineComponent[((Period,Topic), Frequency), ((
    */
   def calculateSlopes(input: RDD[(Topic, List[(Period,Frequency)])]): RDD[((Period, Topic), Slope)] = {
     input.flatMap {
-    case (topic, pfList) =>
+      case (topic, pfList) if pfList.size == 1 => Some(((pfList.head._1, topic), new Slope(0)))
+      case (topic, pfList) =>
 
-      // Sort the list based on period.
-      val sortList = pfList.sortBy(_._1.v)
+        // Sort the list based on period.
+        val sortList = pfList.sortBy(_._1.v)
 
-      // Create list of adjacent (period, frequency) pairs.
-      val fPairs = sortList zip sortList.tail
 
-      // Calculate slopes for each period.
-      val sPairs = fPairs.map {
-        case ((x1, y1), (x2, y2)) =>
-          (x1, new Slope(((y2.v - y1.v).toDouble / (x2.v - x1.v).toDouble).toInt))
-      }
+        // This is intended because the slope is undefined for such a list.
+        val fPairs = sortList zip sortList.tail
 
-      // Convert back to the original key/val grouping => ((period,topic), slope)
-      for ((period,slope) <- sPairs) yield {
-        ((period,topic), slope)
-      }
+
+        // Calculate slopes for each period.
+        val sPairs = fPairs.map {
+          case ((x1, y1), (x2, y2)) =>
+            (x1, new Slope((y2.v - y1.v).toDouble / (x2.v - x1.v).toDouble))
+        }
+
+        // Convert back to the original key/val grouping => ((period,topic), slope)
+        for ((period,slope) <- sPairs) yield {
+          ((period,topic), slope)
+        }
     }
   }
 

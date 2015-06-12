@@ -1,6 +1,6 @@
 package nl.svanwouw.trending
 
-import nl.svanwouw.trending.components.{SlopeCalculator, FrequencyCounter, Tokenizer, TweetExtractor}
+import nl.svanwouw.trending.components._
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
@@ -21,7 +21,7 @@ object TrendingTopicPipeline {
    * @param outputDir The output dir location.
    * @param periodSize The number of seconds per period (3600 for an hour, 86400 for a day).
    */
-  def execute(master: String, inputFile: String, outputDir: String, periodSize: Int) {
+  def execute(master: String, inputFile: String, outputDir: String, periodSize: Int, topN: Int) {
     val sc = {
       val conf = new SparkConf().setAppName(AppName).setMaster(master)
       new SparkContext(conf)
@@ -34,16 +34,17 @@ object TrendingTopicPipeline {
       new TweetExtractor(periodSize).process |>
       Tokenizer.process |>
       FrequencyCounter.process |>
-      SlopeCalculator.process
+      SlopeCalculator.process |>
+      new TopFilter(topN).process
     output.saveAsTextFile(outputDir)
   }
 
   def main(args: Array[String]) {
-    if (args.length < 4) {
-      System.err.println("Usage: Main <host> <input_file> <output_dir> <period in secs>")
+    if (args.length < 5) {
+      System.err.println("Usage: Main <host> <input_file> <output_dir> <period in secs> <top n>")
       System.exit(1)
     }
-    execute(args(0), args(1), args(2), args(3).toInt)
+    execute(args(0), args(1), args(2), args(3).toInt, args(4).toInt)
   }
 
 }
