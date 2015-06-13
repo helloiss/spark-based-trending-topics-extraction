@@ -1,13 +1,18 @@
 # Trending Topic Extraction with Spark (PoC)
 
-This is a hobby project I created in order to learn Scala and the Spark programming API in under 24 programming hours.
+This is a hobby project I created in order to learn Scala and the Spark programming API in under 24 programming hours. Note that the implementation currently still contains some inefficiencies.
+
+The Spark MapReduce job calculates the top N trending topics in a Twitter dump over a configurable period of time X.
+
+We define a [Trending Topic](https://en.wikipedia.org/wiki/Twitter#Trending_topics) as a word for which the [slope](https://en.wikipedia.org/wiki/Slope) of frequency of occurence in a certain period is largest. 
+
+# Design
 
 ![Design](https://raw.githubusercontent.com/stefanvanwouw/spark-based-trending/master/doc/flow.png)
 
 # Getting Started
 
 Simply build using Maven :)
-
 
 # Contributing
 
