@@ -32,7 +32,7 @@ class TweetExtractor(val periodSize: Int) extends PipelineComponent[String, (Per
    * @param rawJson The raw json to parse.
    * @return The tweet contents.
    */
-  private def extractTweet(rawJson: String, periodSize: Int) : Option[(Period, Tweet)] = {
+  def extractTweet(rawJson: String, periodSize: Int) : Option[(Period, Tweet)] = {
     implicit val formats = new Formats {
       override def dateFormat: DateFormat = new SerializableDateFormat("E, dd MMM yyyy HH:mm:ss")
     }

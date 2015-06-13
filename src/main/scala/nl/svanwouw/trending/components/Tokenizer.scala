@@ -32,7 +32,7 @@ object Tokenizer extends PipelineComponent[(Period, Tweet), (Period, Topic)] {
    * @param tweet The raw input of the tweet.
    * @return A list of tokens.
    */
-  private def tokenize(tweet: Tweet): Array[Topic]  = {
+  def tokenize(tweet: Tweet): Array[Topic]  = {
     tweet.v
       .toLowerCase // Convert all topics to lower case.
       .replaceAll(MatchURL, "") // Strip all URLs.
