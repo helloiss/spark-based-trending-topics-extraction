@@ -8,7 +8,7 @@ We define a [Trending Topic](https://en.wikipedia.org/wiki/Twitter#Trending_topi
 
 # Design
 
-![Design](https://raw.githubusercontent.com/stefanvanwouw/spark-based-trending/master/doc/flow.png)
+![Design](doc/flow.png?raw=true)
 
 # Getting Started
 
